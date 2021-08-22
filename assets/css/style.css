@@ -1,0 +1,76 @@
+.list-group {
+    width: 18%;
+    padding-left: 35px;
+    order: 1;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  body {
+    background: rgb(78,69,126);
+    background: linear-gradient(90deg, rgba(78,69,126,1) 0%, rgba(254,0,227,1) 100%, rgba(0,212,255,1) 100%); 
+  }
+  
+  #card-weather {
+    order: 1;
+    width: 78%;
+    visibility: hidden;
+    opacity: 85%;
+    background-color: aquamarine;
+    height: 25%;
+  }
+  .valid-input {
+    color: red;
+    text-emphasis: inherit;
+  }
+  
+  .weather-icon-img, .card-icon {
+    width: 100px;
+    height: 100px;
+  }
+  
+  #forecast-div {
+    /* width: 50%; */
+    opacity: 85%;
+    background-color: aquamarine;
+  
+  }
+  
+  #five-day-forecast {
+    width: 900px;
+    order: 2;
+    width: 79%;
+    height: 15%;
+  }
+  
+  .card-body {
+    height: 300px;
+  }
+  
+  .cards {
+    width: 150px;
+    opacity: 85%;
+    background-color: aquamarine;
+  }
+  
+  
+  .width {
+    width: 100%;
+  }
+  
+  .fiveDayP {
+    font-size: 30px;
+    padding-left: 20px;
+    font-weight: 500;
+  }
+  
+  .card-uv {
+    width: fit-content;
+    padding-left: 3px;
+    padding-right: 3px;
+    color: aliceblue;
+    border-radius: 5%;
+    
+  }
