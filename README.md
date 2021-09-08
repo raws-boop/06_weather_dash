@@ -4,10 +4,9 @@
 
 ## Table of Contents
 
-- [About the Project](X#about-the-project)
+- [About the Project](#about-the-project)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Credit](#credit)
 
 ## About the Project
 
@@ -20,15 +19,15 @@
 - When the you typed the City on the Textbox and clicked the Search button the screen will generate today's weather and the 5 day forecast. 
 - UV Color will change depends on the level of the UV Index,
     - (0 - 2) Green
-    - (3 - 4)
+    - (3 - 4) Yellow
 
 ## Installation
 
-- Open [Weather Dashboard](06_weather_dash 
+- Open [Weather Dashboard](06_weather_dash)
 
 ## Usage
 
 - Type the City on the search input and click search and it will show the weather forecast.
 - Click the listed city below Search button and it will show you the weather forecast.
-- Go to [Deployed Github Pages](INSERT LINK)
+- Go to [Deployed Github Pages](https://raws-boop.github.io/06_weather_dash/)
 
