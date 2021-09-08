@@ -1,206 +1,971 @@
-// Variables
-const today = moment().format('dddd, MMM Do YYYY');
+//Pulling over elements from html
+//section here has elements from left bar of website
+var citySearchBar = document.querySelector("#citySearchBar");
+var citySearchBarButton = document.querySelector("#citySearchBarButton");
+var AustinButton = document.querySelector("#AustinButton");
+var ChicagoButton = document.querySelector("#ChicagoButton");
+var NewYorkButton = document.querySelector("#NewYorkButton");
+var OrlandoButton = document.querySelector("#OrlandoButton");
+var SanFranciscoButton = document.querySelector("#SanFranciscoButton");
+var SeattleButton = document.querySelector("#SeattleButton");
+var DenverButton = document.querySelector("#DenverButton");
+var AtlantaButton = document.querySelector("#AtlantaButton");
+var currentCity = document.querySelector("#currentCity");
+var currentCityDate = document.querySelector("#currentCityDate");
+var currentCityWeather = document.querySelector("#currentCityWeather")
+var currentCityTemp = document.querySelector("#currentCityTemp");
+var currentCityWind = document.querySelector("#currentCityWind");
+var currentCityHumidity = document.querySelector("#currentCityHumidity");
+var currentCityUVI = document.querySelector("#currentCityUVI");
 
-$(".history-btn").on('click', function() {
-  const text = $(this).text();
-  localStorage.clear();
-  searchApi(text);
-  saveToHistory(text);
-  
-});
+//html elements for next day of selected city
+var day1 = document.querySelector("#day1");
+var day1date = document.querySelector("#day1date")
+var day1weather = document.querySelector("#day1weather");
+var day1temp = document.querySelector("#day1temp");
+var day1wind = document.querySelector("#day1wind");
+var day1humidity = document.querySelector("#day1humidity");
 
+var day2 = document.querySelector("#day2");
+var day2date = document.querySelector("#day2date")
+var day2weather = document.querySelector("#day2weather");
+var day2temp = document.querySelector("#day2temp");
+var day2wind = document.querySelector("#day2wind");
+var day2humidity = document.querySelector("#day2humidity");
 
-$('#btn-search').on('click', function() {
-  localStorage.clear();
-  const searchVal = $('#txt-search').val()
-  const validInput = $('<span>').addClass('valid-input').text(`Please enter a valid input`);
-  $('.valid-input').remove();
-  if(searchVal == "") {
-    
-    $('.list-group').children().eq(2).append(validInput);
-    return;
-  }
-  saveToHistory(searchVal)
-  searchApi(searchVal);
-});
+var day3 = document.querySelector("#day3");
+var day3date = document.querySelector("#day3date")
+var day3weather = document.querySelector("#day3weather");
+var day3temp = document.querySelector("#day3temp");
+var day3wind = document.querySelector("#day3wind");
+var day3humidity = document.querySelector("#day3humidity");
 
-// UV API
-function uvDisplay(txtSearchEl) {
-  const request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${txtSearchEl}?unitGroup=us&key=LN5SPL4X8SJDJALJ9THXY4WDC`;
+var day4 = document.querySelector("#day4");
+var day4date = document.querySelector("#day4date")
+var day4weather = document.querySelector("#day4weather");
+var day4temp = document.querySelector("#day4temp");
+var day4wind = document.querySelector("#day4wind");
+var day4humidity = document.querySelector("#day4humidity");
 
-  fetch(request)
-    .then(res => res.json()) 
+var day5 = document.querySelector("#day5");
+var day5date = document.querySelector("#day5date")
+var day5weather = document.querySelector("#day5weather");
+var day5temp = document.querySelector("#day5temp");
+var day5wind = document.querySelector("#day5wind");
+var day5humidity = document.querySelector("#day5humidity");
 
+// Function displays the current day and the next 5 days
+function displayDay() {
+  $("#currentCityDate").text(moment().format("[(]M/D/YYYY[)]"));
+  $("#day1date").text(moment().add(1,"days").format("M/D/YYYY"));
+  $("#day2date").text(moment().add(2,"days").format("M/D/YYYY"));
+  $("#day3date").text(moment().add(3,"days").format("M/D/YYYY"));
+  $("#day4date").text(moment().add(4,"days").format("M/D/YYYY"));
+  $("#day5date").text(moment().add(5,"days").format("M/D/YYYY"));
+}
+setInterval(displayDay, 1000);
 
-    .then(data => { 
-      
-      $('.card-uv').empty();
-      let uvIndex = $('<p>').addClass('card-uv').text(`UV: ${data.days[0].uvindex}`)
-      // console.log(data.days[0].uvindex);
-      $('.card-body').append(uvIndex)
-      let uvGrade = data.days[0].uvindex;
-      let uvClass = $('.card-uv');
+// get next five days
+var epochCurrent = Math.round((new Date()).getTime() / 1000);
+var epochNeg1 = epochCurrent - (86400 * 1)
+var epochNeg2 = epochCurrent - (86400 * 2)
+var epochNeg3 = epochCurrent - (86400 * 3)
+var epochNeg4 = epochCurrent - (86400 * 4)
+var epochNeg5 = epochCurrent - (86400 * 5)
 
-      if (uvGrade <= 2) {
-        
-        uvClass.css('background', "#008000")  ;
-      } else if (uvGrade <= 4) {
-        
-        uvClass.css('background', "#FFFF00");
-        uvClass.css('color', "#000");
-        
-      } else if (uvGrade <= 6) {
-        
-        uvClass.css('background', "#FFA500");
-      } else if (uvGrade <= 8) {
-        
-        uvClass.css('background', "#AA0000");
-      } else if (uvGrade <= 10) {
-        
-        uvClass.css('background', "#800080");
-      } else {
-        
-      }   
-  })
+// Request url for each city
+var requestUrlAustin = "https://api.openweathermap.org/data/2.5/weather?q=Austin&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc";
+var requestUrlChicago = 'https://api.openweathermap.org/data/2.5/weather?q=Chicago&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
+var requestUrlNewYork = 'https://api.openweathermap.org/data/2.5/weather?q=New+York+City&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
+var requestUrlOrlando = 'https://api.openweathermap.org/data/2.5/weather?q=Orlando&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
+var requestUrlSanFrancisco = 'https://api.openweathermap.org/data/2.5/weather?q=San+Francisco&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
+var requestUrlSeattle = 'https://api.openweathermap.org/data/2.5/weather?q=Seattle&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
+var requestUrlDenver = 'https://api.openweathermap.org/data/2.5/weather?q=Denver&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
+var requestUrlAtlanta = 'https://api.openweathermap.org/data/2.5/weather?q=Atlanta&units=imperial&appid=412a43a2e062fcffc23f314b23bd16bc'
 
-    .catch(function (error) {
-      console.error(error);
+// Now that everything is set up we can grab our information for each city
+// Austin
+function showResponseAustin(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  fetch(requestUrlAustin)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //gets the lat and lon
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+    fetch(requestUrlAustin2)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
     });
 
-}
-
-
-
-
-// Generate Cards
-function searchApi(txtSearchEl) {
-  
-  const request = `https://api.openweathermap.org/data/2.5/forecast?q=${txtSearchEl}&units=imperial&appid=904d57a990eb1f14578feeb79ec45ef2`;
-  $('#card-weather').css('visibility', 'visible');
-
-  fetch(request)
-    .then(res => res.json()) 
-    
-    .then(data => { 
-      // Clearing data before searching again
-      $('#card-weather').empty();
-
-      let card = $('<div>').addClass('card-body');
-      let cardCity = $('<h2>').addClass('card-city').text(`${data.city.name}`);
-      let title = $('<h5>').addClass('card-today').text(today);
-      let temp = $('<p>').addClass('card-temp').text(`Temp: ${data.list[0].main.temp}°F`);
-      let wind = $('<p>').addClass('card-wind').text(`Wind: ${data.list[0].wind.speed}M/H`);
-      let humid = $('<p>').addClass('card-humid').text(`Humid: ${data.list[0].main.humidity}%`);
-      let icon = $('<img>').addClass('card-icon').attr({ src: `./Assets/Images/${data.list[0].weather[0].icon}.png`});
-      card.append(cardCity, title, temp, wind, humid);
-      $('#card-weather').append(card);
-      $('.card-city').append(icon);
-      
-
-  })
-
-    .catch(function (error) {
-      console.error(error);
+    fetch(requestUrlAustinNeg1)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+      day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+      day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+      day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
     });
 
-    secondFetch(txtSearchEl);
-}
-
-function secondFetch(txtSearchEl) {
-  const request = `https://api.openweathermap.org/data/2.5/forecast?q=${txtSearchEl}&units=imperial&appid=904d57a990eb1f14578feeb79ec45ef2`;
-  $('#five-day-forecast').empty();
-  $('#card-weather').css('visibility', 'visible');
-  $('#five-day-forecast').css('visibility', 'visible');
-  $('#card-weather').empty();
-  fetch(request)
-    .then(res => res.json()) 
-    
-
-
-    .then(data => { 
-    
-      $('#five-day-forecast').empty();
-      let fiveDayP = $('<p>').addClass('fiveDayP').text("5-Day Forecast: ")
-      let cardForecastDiv = $('<div>').addClass('d-flex width justify-content-around align-self-start');
-      let hrEl = $('<hr>').addClass('').text("")
-      $('#card-weather').append(hrEl, fiveDayP);
-      
-      for ( let x = 0  ; x <= 39 ; x+=8) {
-      
-      let dateWeather = new Date.parse(data.list[x].dt_txt).toString();
-      
-      dateWeather = dateWeather.split(' ').slice(1, 4).join(' ');
-
-
-      let cardForecast = $('<div>').addClass('cards');
-      let dateForecast = $('<h5>').addClass('card-today-forecast').text(`${dateWeather}`);
-      let tempForecast = $('<p>').addClass('card-temp').text(`Temp: ${data.list[x].main.temp}°F`);
-      let windForecast = $('<p>').addClass('card-wind').text(`Wind: ${data.list[x].wind.speed}M/H`);
-      let humidForecast = $('<p>').addClass('card-humid').text(`Humidity: ${data.list[x].main.humidity}%`);
-      let iconForecast = $('<img>').addClass('card-icon').attr({ src: `./Assets/Images/${data.list[x].weather[0].icon}.png` });
-
-      cardForecast.append(dateForecast,iconForecast, tempForecast, windForecast, humidForecast);
-      cardForecastDiv.append(cardForecast);
-
-      $('#card-weather').append(cardForecastDiv);
-      
-  }
-  uvDisplay(txtSearchEl);
-})
-    .catch(function (error) {
-      const validInput = $('<span>').addClass('valid-input').text(`Not A Valid City Please Try Again`);
-      $('.list-group').children().eq(2).append(validInput);
-      $('#five-day-forecast').css('visibility', 'hidden');
-      console.error(error);
+    fetch(requestUrlAustinNeg2)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+      day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+      day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+      day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
     });
+
+    fetch(requestUrlAustinNeg3)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+      day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+      day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+      day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+    });
+
+    fetch(requestUrlAustinNeg4)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+      day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+      day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+      day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+    });
+
+    fetch(requestUrlAustinNeg5)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+      day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+      day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+      day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+    });
+  });
+}
+
+// Chicago
+function showResponseChicago(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlChicago)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+
+
+      var requestUrlChicago2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlChicagoNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlChicagoNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlChicagoNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlChicagoNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlChicagoNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
     
-  }
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlChicago2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
 
-// Check if search has a valid input
-function validInput() {
+        fetch(requestUrlChicagoNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
 
-  let txtSearchEl = document.querySelector('#txt-search');
-  txtSearchEl = txtSearchEl.value;
-  if (!txtSearchEl) {
-    console.error('Please enter a value.')
+        fetch(requestUrlChicagoNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
 
-    return;
-  }
+        fetch(requestUrlChicagoNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
 
-  searchApi(txtSearchEl);
-  saveToHistory(txtSearchEl);
+        fetch(requestUrlChicagoNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlChicagoNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
 }
 
-//Save to search to local storage
+// New York
+function showResponseNewYork(event) {
+  // Prevent default action
+  event.preventDefault();
 
-function saveToHistory(txtSearchEl) {
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlNewYork)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
 
-  let historyLS = JSON.parse(localStorage.getItem("historyLS")) || [];
-  let cityEl = txtSearchEl;
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
 
-  let newHistory = {
-    city: cityEl
-  };
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
 
-  historyLS.push(newHistory);
-  localStorage.setItem('historyLS',JSON.stringify(historyLS));
 
+      var requestUrlNewYork2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlNewYorkNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlNewYorkNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlNewYorkNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlNewYorkNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlNewYorkNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlNewYork2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
+
+        fetch(requestUrlNewYorkNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlNewYorkNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlNewYorkNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlNewYorkNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlNewYorkNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
 }
 
+// Orlando
+function showResponseOrlando(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlOrlando)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
 
 
-// Showing the last city when refreshed
-function onLoad() {
-  $('#card-weather').empty();
-  if (localStorage.getItem("historyLS") === null) {
-      return;
-  };
+      var requestUrlOrlando2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlOrlandoNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlOrlandoNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlOrlandoNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlOrlandoNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlOrlandoNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlOrlando2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
 
-  let historyLS = JSON.parse(localStorage.getItem("historyLS") || []);
-  let cityHistory = historyLS[0].city;
-  // console.log(cityHistory);
-  searchApi(cityHistory);
+        fetch(requestUrlOrlandoNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
 
+        fetch(requestUrlOrlandoNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlOrlandoNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlOrlandoNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlOrlandoNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
 }
 
-onLoad();
+// San Francisco
+function showResponseSanFrancisco(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlSanFrancisco)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+
+
+      var requestUrlSanFrancisco2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSanFranciscoNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSanFranciscoNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSanFranciscoNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSanFranciscoNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSanFranciscoNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlSanFrancisco2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
+
+        fetch(requestUrlSanFranciscoNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSanFranciscoNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSanFranciscoNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSanFranciscoNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSanFranciscoNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
+}
+
+// Seattle
+function showResponseSeattle(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlSeattle)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+
+
+      var requestUrlSeattle2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSeattleNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSeattleNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSeattleNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSeattleNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSeattleNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlSeattle2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
+
+        fetch(requestUrlSeattleNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSeattleNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSeattleNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSeattleNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSeattleNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
+}
+
+// Denver
+function showResponseDenver(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlDenver)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+
+
+      var requestUrlDenver2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlDenverNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlDenverNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlDenverNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlDenverNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlDenverNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlDenver2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
+
+        fetch(requestUrlDenverNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlDenverNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlDenverNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlDenverNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlDenverNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
+}
+
+// Atlanta
+function showResponseAtlanta(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlAtlanta)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+
+
+      var requestUrlAtlanta2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlAtlantaNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlAtlantaNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlAtlantaNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlAtlantaNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlAtlantaNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+     //writes out the results for the UVI for the current day
+      fetch(requestUrlAtlanta2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
+
+        fetch(requestUrlAtlantaNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlAtlantaNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlAtlantaNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlAtlantaNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlAtlantaNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
+}
+
+// Search any of the cities
+function showResponseSearched(event) {
+  // Prevent default action
+  event.preventDefault();
+
+  linkInput = citySearchBar.value
+
+  var requestUrlSearched = "https://api.openweathermap.org/data/2.5/weather?q="+linkInput+"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7"
+
+  // Browser Fetch Method for each of the buttons
+  //writes out most of the main data currently for the city
+  fetch(requestUrlSearched)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+
+      //Begins assigning values for variables inside current city box
+      currentCity.innerHTML = (data.name);
+      currentCityWeather.innerHTML = "Weather: " + (data.weather[0].main);
+      currentCityTemp.innerHTML = "Temp: " + (data.main.temp) + "&deg; F";
+      currentCityWind.innerHTML = "Wind: " + (data.wind.speed) + "MPH";
+      currentCityHumidity.innerHTML = "Humidity: " + (data.main.humidity) + "%";
+
+      //lat and lon for next api input
+      var lon = data.coord.lon;
+      var lat = data.coord.lat;
+
+
+      var requestUrlSearched2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" +lat +"&lon=" +lon +"&units=imperial&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSearchedNeg1 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg1 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSearchedNeg2 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg2 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSearchedNeg3 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg3 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSearchedNeg4 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg4 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+      var requestUrlSearchedNeg5 = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=" +lat +"&lon=" +lon + "&units=imperial&dt=" + epochNeg5 + "&appid=55838ae1992975e39fe364d4c0e5deb7";
+    
+      //writes out the results for the UVI for the current day
+      fetch(requestUrlSearched2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          currentCityUVI.innerHTML = "UVI: " + (data.current.uvi);
+        });
+
+        fetch(requestUrlSearchedNeg1)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day1weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day1temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day1wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day1humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSearchedNeg2)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day2weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day2temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day2wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day2humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSearchedNeg3)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day3weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day3temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day3wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day3humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSearchedNeg4)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day4weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day4temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day4wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day4humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+
+        fetch(requestUrlSearchedNeg5)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          day5weather.innerHTML = "Weather: " + (data.current.weather[0].main);
+          day5temp.innerHTML = "Temp: " + (data.current.temp) + "&deg; F";
+          day5wind.innerHTML = "Wind: " + (data.current.wind_speed) + "MPH";
+          day5humidity.innerHTML = "Humidity: " + (data.current.humidity) + "%";
+        });
+    });
+}
+
+AustinButton.addEventListener("click", showResponseAustin);
+ChicagoButton.addEventListener("click", showResponseChicago);
+NewYorkButton.addEventListener("click", showResponseNewYork);
+OrlandoButton.addEventListener("click", showResponseOrlando);
+SanFranciscoButton.addEventListener("click", showResponseSanFrancisco);
+SeattleButton.addEventListener("click", showResponseSeattle);
+DenverButton.addEventListener("click", showResponseDenver);
+AtlantaButton.addEventListener("click", showResponseAtlanta);
+citySearchBarButton.addEventListener("click", showResponseSearched);

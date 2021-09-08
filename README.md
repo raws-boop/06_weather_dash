@@ -1,11 +1,10 @@
-# Project 006 : Weather Dashboard
+# Project 06 : Weather Dashboard
 
 - The Weather dashboard is a tool for all users to give the weather update for the selected city. The dashboard will display the city, date, humidity, temperature and the next 5 day forecast. 
 
 ## Table of Contents
 
 - [About the Project](#about-the-project)
-- [Installation](#installation)
 - [Usage](#usage)
 
 ## About the Project
@@ -20,10 +19,6 @@
 - UV Color will change depends on the level of the UV Index,
     - (0 - 2) Green
     - (3 - 4) Yellow
-
-## Installation
-
-- Open [Weather Dashboard](06_weather_dash)
 
 ## Usage
 
