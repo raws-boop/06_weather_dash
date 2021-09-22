@@ -1,55 +1,77 @@
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weather Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-  <link rel="stylesheet" href="./Assets/CSS/Style.css">
-</head>
-<body>
-<header>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard</title>
 
-</header>
-<nav class="navbar navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Weather Dashboard</a>
-  </div>
-</nav>
-  <main class="flex row justify-content-start">
-<!-- Navigation Bar -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
 
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="jumbotron jumbotron-fluid bg-info">
+      <div class="container">
+        <h1 class="display-4">Weather Dashboard</h1>
+      </div>
+    </div>
 
-<ul class="row list-group">
-  <li class="list-group-item disabled" aria-disabled="true">Search for a City:</li>
-  <li class="list-group-item"><input type="text" class="form-control" placeholder="City" aria-label="City" aria-describedby="basic-addon1" id="txt-search"></li>
-  <!-- Search Button -->
-  <li class="list-group-item"><button type="button" class="btn btn-primary btn-sm" id="btn-search">Search</button></li>
-  <hr>
-  <!-- List of Cities -->
-  <li class="list-group-item"><button value="Austin" id="btn-Austin" type="button" class="btn history-btn btn-secondary btn-sm">Austin</button></li>
-  <li class="list-group-item"><button value="Chicago" id="btn-Chicago" type="button" class="btn history-btn btn-secondary btn-sm">Chicago</button></li>
-  <li class="list-group-item"><button value="New York" id="btn-NewYork" type="button" class="btn history-btn btn-secondary btn-sm">New York</button></li>
-  <li class="list-group-item"><button value="Orlando" id="btn-Orlando" type="button" class="btn history-btn btn-secondary btn-sm">Orlando</button></li>
-  <li class="list-group-item"><button value="San Francisco" id="btn-SanFrancisco" type="button" class="btn history-btn btn-secondary btn-sm">San Francisco</button></li>
-  <li class="list-group-item"><button value="Seattle" id="btn-Seattle" type="button" class="btn history-btn btn-secondary btn-sm">Seattle</button></li>
-  <li class="list-group-item"><button value="Denver" id="btn-Denver" type="button" class="btn history-btn btn-secondary btn-sm">Denver</button></li>
-  <li class="list-group-item"><button value="Atlanta" id="btn-Atlanta" type="button" class="btn history-btn btn-secondary btn-sm">Atlanta</button></li>
-</ul>
+    <main class="flex-row justify-space-between">
+      <div class="col-12 col-md-4">
+        <div class="card">
+          <h3 class="card-header">Search for a City:</h3>
+          <form id="user-form" class="card-body">
+            <label
+              class="form-label"
+              for="username"
+              placeholder="Seattle"
+            ></label>
+            <input
+              name="username"
+              id="username"
+              type="text"
+              autofocus="true"
+              class="form-input"
+            />
+            <button type="search" class="btn bg-primary text-light">Search</button>
+          </form>
+        </div>
 
+        <div class="card">
+          <div class ="cities-container">
+          <h3 class="card-header"> Recent Searches</h3>
+          <div class="last=search" id ="last-search-button"></div>
+        </div>
+      </div>
 
-<div id="card-weather" class="card city align-self-start justify-content-between p-2" ></div>
+      <div class="col-12 col-md-9 float-right">
+        <div class = "row border selected-city" id = "current-forecast">
+            <div class = "col-12">
+                <h2 id="searched-city"></h2>
+                <div id = "current-weather-container" class = "list-group"></div>
+            </div>  
+        </div>
 
+        <div class="five-day-card">
+          <div class ="five-day-container">
+          <h3 class="card-header"> 5 Day Weather Display</h3>
+          <div id="five-day-search"></div>
+        </div>
+      </div>
 
-<div id="five-day-forecast" class="d-flex"></div>
-  </main>
-<footer>
+    </main>
 
-</footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
-<script type="text/JavaScript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-<script src="./Assets/JavaScript/date.js"></script>
-<script type="text/JavaScript" src="./Assets/JavaScript/script.js"></script>
-
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"
+    ></script>
+    <script src="script.js"></script>
+  </body>
 </html>
